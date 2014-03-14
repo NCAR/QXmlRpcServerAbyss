@@ -29,6 +29,16 @@ QXmlRpcServerAbyss::QXmlRpcServerAbyss(xmlrpc_c::registry * registry,
         exit(1);
     }
 
+    // Set SO_REUSEADDR on the socket, so the bind() below will work even
+    // if a previous server instance died recently and the old port binding
+    // has not yet timed out.
+    int one = 1;
+    if (setsockopt(_fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int)) == -1) {
+        ELOG << "Unable to set SO_REUSEADDR for the server socket: " <<
+                strerror(errno);
+        exit(1);
+    }
+
     // Bind the socket to the given port number for the server
     struct sockaddr_in my_addr;
     memset(&my_addr, 0, sizeof(struct sockaddr_in));
