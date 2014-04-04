@@ -33,10 +33,10 @@ Default(dox)
 # named the same as this one.
 doxdir = os.path.basename(tooldir)
     
-def qxmlrpcserverabyss(env):
+def QXmlRpcServerAbyss(env):
     env.AppendUnique(CPPPATH = [includeDir])
     env.AppendUnique(LIBS = [lib])
     env.AppendDoxref(doxdir)
     env.Require(tools)
 
-Export('qxmlrpcserverabyss')
+Export('QXmlRpcServerAbyss')
