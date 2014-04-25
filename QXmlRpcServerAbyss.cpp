@@ -8,6 +8,7 @@
 #include "QXmlRpcServerAbyss.h"
 #include <cerrno>
 #include <cstdlib>
+#include <unistd.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <logx/Logging.h>
