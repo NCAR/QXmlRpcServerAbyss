@@ -6,6 +6,7 @@
  */
 
 #include "QXmlRpcServerAbyss.h"
+#include <QMutexLocker>
 #include <cerrno>
 #include <cstdlib>
 #include <unistd.h>
@@ -17,11 +18,15 @@ LOGGING("QXmlRpcAbyssServer")
 
 QXmlRpcServerAbyss::QXmlRpcServerAbyss(xmlrpc_c::registry * registry,
         int serverPort) :
+    _mutex(QMutex::Recursive),
     _serverPort(serverPort),
     _fd(-1),
     _registry(registry),
     _abyssServer(NULL),
     _connectNotifier(NULL) {
+    // acquire the mutex lock
+    QMutexLocker lock(& _mutex);
+    
     // Open a socket for the abyssServer
     _fd = socket(AF_INET, SOCK_STREAM, 0);
     if (_fd == -1) {
@@ -54,22 +59,24 @@ QXmlRpcServerAbyss::QXmlRpcServerAbyss(xmlrpc_c::registry * registry,
         exit(1);
     }
 
+    // Instantiate the abyssServer using our socket's file descriptor
+    _abyssServer = new xmlrpc_c::serverAbyss(xmlrpc_c::serverAbyss::constrOpt()
+                                                .registryP(_registry)
+                                                .socketFd(_fd));
+
     // Here's the magic to make things work with Qt. We create a QSocketNotifier
     // to generate a signal when something comes in on our socket's file
     // descriptor and connect that signal to our connection handler method.
     _connectNotifier = new QSocketNotifier(_fd, QSocketNotifier::Read);
     connect(_connectNotifier, SIGNAL(activated(int)),
             this, SLOT(_handleXmlRpcRequest()));
-
-    // Instantiate the abyssServer using our socket's file descriptor
-    _abyssServer = new xmlrpc_c::serverAbyss(xmlrpc_c::serverAbyss::constrOpt()
-                                                .registryP(_registry)
-                                                .socketFd(_fd));
-
 }
 
 void
 QXmlRpcServerAbyss::_handleXmlRpcRequest() {
+    // acquire the mutex lock
+    QMutexLocker lock(& _mutex);
+    
     // Temporarily disable the connect notifier
     _connectNotifier->setEnabled(false);
 
@@ -81,7 +88,7 @@ QXmlRpcServerAbyss::_handleXmlRpcRequest() {
 }
 
 QXmlRpcServerAbyss::~QXmlRpcServerAbyss() {
-    delete(_abyssServer);
     delete(_connectNotifier);
+    delete(_abyssServer);
     close(_fd);
 }

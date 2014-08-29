@@ -8,6 +8,7 @@
 #ifndef QXMLRPCABYSSSERVER_H_
 #define QXMLRPCABYSSSERVER_H_
 
+#include <QMutex>
 #include <QObject>
 #include <QSocketNotifier>
 #include <xmlrpc-c/registry.hpp>
@@ -67,6 +68,9 @@ private slots:
     void _handleXmlRpcRequest();
 
 private:
+    /// mutex for thread safety in accessing members
+    QMutex _mutex;
+    
     /// port number used by our XML-RPC server
     int _serverPort;
 
