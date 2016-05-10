@@ -1,7 +1,7 @@
 # QXmlRpcServerAbyss
 Qt class which encapsulates xmlrpc_c's xmlrpc_c::serverAbyss class.
 
-A SCons tool file builds the associated library within an EOL SCons environment when a dependency on `QXmlRpcServerAbyss` exists.
+The included SCons tool file builds the associated library within an EOL SCons environment when a dependency on `QXmlRpcServerAbyss` exists.
 
 Use of the class within a Qt application is simple:
 
