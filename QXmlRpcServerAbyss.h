@@ -36,6 +36,10 @@
 #include <QSocketNotifier>
 #include <xmlrpc-c/registry.hpp>
 #include <xmlrpc-c/server_abyss.hpp>
+// Version 1.32.5 of xmlrpc-c (the version in CentOS 7) defines the macro CR in
+// xmlrpc-c/abyss.h, but only needs it internally. Undefine CR now, because it
+// can wreak havoc in any code which follows this header.
+#undef CR
 
 /// @brief Provide an xmlrpc_c++ xmlrpc_c::serverAbyss intended to play well
 /// with Qt.
