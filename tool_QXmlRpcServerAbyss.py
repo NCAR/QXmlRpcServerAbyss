@@ -8,7 +8,7 @@ tools = Split("""
     doxygen
     xmlrpc_server_abyss++
     logx
-    qt5
+    qt4
 """)
 env = Environment(tools=['default'] + tools)
 env.EnableQtModules(['QtCore'])
